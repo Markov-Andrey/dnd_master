@@ -1,0 +1,17 @@
+{
+  "human": {
+    "name": "Человек",
+    "bonuses": {"personality": 10, "luck": 5},
+    "description": "Универсальны и амбициозны. Бонус к Харизме и Удаче."
+  },
+  "elf": {
+    "name": "Эльф",
+    "bonuses": {"intelligence": 10, "willpower": 5, "endurance": -5},
+    "description": "Одарены магией. Высокий Интеллект, но хрупкое телосложение."
+  },
+  "orc": {
+    "name": "Орк",
+    "bonuses": {"strength": 10, "endurance": 5, "personality": -10},
+    "description": "Грубая физическая сила. Низкая Харизма, но выдающаяся Сила."
+  }
+}

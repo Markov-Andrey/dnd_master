@@ -1,0 +1,52 @@
+{
+  "_comment": "Авторское описание мира. world_seed фиксирован — меняйте только для смены рельефа. Все локации задаются вручную.",
+  "world_seed": 7777,
+  "world_size": 16,
+
+  "terrain_overrides": {
+    "8,8": "plains",
+    "8,7": "plains",
+    "7,8": "plains",
+    "5,6": "plains",
+    "5,5": "forest",
+    "10,4": "mountains",
+    "3,12": "coast",
+    "12,11": "desert"
+  },
+
+  "locations": {
+    "city_zhelezny_priyut": {
+      "name": "Железный Приют",
+      "type": "city",
+      "world_x": 8,
+      "world_y": 8,
+      "description": "Столица региона. Высокие каменные стены окружают шумный рынок и полуразрушенную цитадель.",
+      "has_inn": true,
+      "has_shop": true,
+      "has_blacksmith": true,
+      "content_file": "content/city_ironhaven.json"
+    },
+    "village_melnichy_ruchey": {
+      "name": "Мельничный Ручей",
+      "type": "village",
+      "world_x": 5,
+      "world_y": 6,
+      "description": "Тихая деревушка у мелкого ручья. Местные с недоверием смотрят на чужаков.",
+      "has_inn": false,
+      "has_shop": true,
+      "has_blacksmith": false,
+      "content_file": "content/village_millcreek.json"
+    },
+    "dungeon_chernaya_peshchera": {
+      "name": "Чёрная Пещера",
+      "type": "dungeon",
+      "world_x": 10,
+      "world_y": 4,
+      "description": "Разветвлённый пещерный лабиринт, пропитанный запахом тлена. В коридорах бродят нежить.",
+      "has_inn": false,
+      "has_shop": false,
+      "has_blacksmith": false,
+      "content_file": null
+    }
+  }
+}

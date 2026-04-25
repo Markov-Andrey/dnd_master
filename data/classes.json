@@ -1,0 +1,26 @@
+{
+  "warrior": {
+    "name": "Воин",
+    "primary_skills": ["blade", "blunt", "block"],
+    "minor_skills": ["archery", "speechcraft"],
+    "stat_bonuses": {"strength": 10, "endurance": 10},
+    "starting_abilities": ["power_attack", "shield_bash"],
+    "description": "Мастер ближнего боя. Превосходит в схватке лицом к лицу."
+  },
+  "scholar": {
+    "name": "Учёный",
+    "primary_skills": ["alchemy", "lockpick", "speechcraft"],
+    "minor_skills": ["sneak", "mercantile"],
+    "stat_bonuses": {"intelligence": 10, "willpower": 10},
+    "starting_abilities": ["identify_item", "brew_potion"],
+    "description": "Знающий и находчивый. Мастер алхимии и переговоров."
+  },
+  "rogue": {
+    "name": "Вор",
+    "primary_skills": ["sneak", "lockpick", "blade"],
+    "minor_skills": ["archery", "alchemy", "mercantile"],
+    "stat_bonuses": {"agility": 10, "speed": 10},
+    "starting_abilities": ["sneak_attack", "pick_pocket"],
+    "description": "Тень и обман. Смертоносен из засады."
+  }
+}
