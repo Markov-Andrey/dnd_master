@@ -626,12 +626,11 @@ body {
 .svg-map svg .map-tile,
 .svg-map svg .local-area {
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity 0.15s;
 }
 
 .svg-map svg .map-tile:hover,
 .svg-map svg .local-area:hover {
-    opacity: 0.8;
     filter: brightness(1.2);
 }
 
@@ -647,43 +646,6 @@ body {
     white-space: pre;
     margin-bottom: 12px;
 }
-
-.move-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    margin-bottom: 12px;
-}
-
-.move-row {
-    display: flex;
-    gap: 4px;
-}
-
-.btn-move {
-    width: 40px;
-    height: 40px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: all 0.2s;
-}
-
-.btn-move:hover:not(:disabled) {
-    border-color: var(--gold);
-    background: var(--bg-hover);
-}
-
-.btn-move:disabled {
-    opacity: 0.3;
-    cursor: default;
-}
-
-
 
 .location-header h3 {
     color: var(--gold-dim);
@@ -785,48 +747,149 @@ body {
 
 .dialogue-panel {
     position: fixed;
-    right: 300px;
-    top: 60px;
-    bottom: 30px;
-    width: 400px;
+    right: 20px;
+    top: 50px;
+    bottom: 20px;
+    width: min(900px, calc(100vw - 40px));
     background: var(--bg-panel);
     border: 1px solid var(--gold-dim);
     border-radius: 8px;
     display: flex;
-    flex-direction: column;
     z-index: 50;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.7);
+    overflow: hidden;
+}
+
+.dialogue-layout {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.dialogue-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--bg-dark);
+    border-right: 1px solid var(--border);
+    padding: 14px;
+    overflow-y: auto;
+}
+
+.dialogue-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 .dialogue-header {
     display: flex;
     align-items: center;
-    gap: 8px;
     padding: 10px 14px;
     border-bottom: 1px solid var(--border);
-}
-
-.dialogue-portrait-bar {
     flex-shrink: 0;
-}
-
-.dialogue-portrait {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid var(--gold-dim);
 }
 
 .dialogue-header span {
     flex: 1;
     color: var(--gold);
     font-weight: bold;
+    font-size: 15px;
 }
 
 .dialogue-header-btns {
     display: flex;
     gap: 6px;
+}
+
+/* Sidebar sections */
+.ds-section {
+    margin-bottom: 14px;
+}
+
+.ds-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gold-dim);
+    margin-bottom: 4px;
+}
+
+.ds-portrait {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+}
+
+.ds-name {
+    color: var(--gold);
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.ds-traits {
+    color: var(--text-dim);
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.ds-mood {
+    color: var(--text);
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.ds-mood-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.ds-text {
+    color: var(--text-dim);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.ds-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 10px 0;
+}
+
+.ds-quest {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.ds-quest:last-child { border-bottom: none; }
+
+.ds-quest-active { color: var(--gold); }
+.ds-quest-done { color: var(--green); text-decoration: line-through; opacity: 0.6; }
+
+.ds-mem {
+    font-size: 10px;
+    color: var(--text-muted);
+    padding: 3px 0;
+    font-style: italic;
+}
+
+.ds-summary {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+    background: var(--bg-input);
+    padding: 6px 8px;
+    border-radius: 4px;
 }
 
 .btn-end {

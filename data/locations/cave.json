@@ -10,12 +10,19 @@
   "actions": ["explore", "mine"],
   "visited": false,
   "local_map": {
+    "grid": {
+      "entrance": [0, 1],
+      "tunnel": [1, 1],
+      "chamber": [2, 1],
+      "crystal": [2, 0],
+      "pit": [2, 2]
+    },
     "subareas": [
       {"id": "entrance", "name": "Вход", "x": 40, "y": 150, "w": 80, "h": 80, "color": "#808080", "icon": "🕳"},
       {"id": "tunnel", "name": "Туннель", "x": 170, "y": 140, "w": 100, "h": 50, "color": "#5a5a5a", "icon": "🚇"},
       {"id": "chamber", "name": "Зал", "x": 310, "y": 120, "w": 130, "h": 100, "color": "#4a4a4a", "icon": "💎"},
       {"id": "crystal", "name": "Кристаллы", "x": 340, "y": 50, "w": 80, "h": 60, "color": "#7a6aaa", "icon": "✨"},
-      {"id": "pit", "name": "Яма", "x": 340, "y": 260, "w": 80, "h": 60, "color": "#2a2a2a", "icon": "⚠"}
+      {"id": "pit", "name": "Логово пауков", "x": 340, "y": 260, "w": 80, "h": 60, "color": "#2a2a2a", "icon": "🕷", "encounter": {"name": "Пауки", "monsters": ["spider", "spider"], "xp": 20}}
     ],
     "paths": [
       ["entrance", "tunnel"], ["tunnel", "chamber"],

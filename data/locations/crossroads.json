@@ -10,6 +10,12 @@
   "actions": ["rest"],
   "visited": false,
   "local_map": {
+    "grid": {
+      "signpost": [1, 0],
+      "campfire": [0, 1],
+      "center": [1, 1],
+      "cart": [2, 1]
+    },
     "subareas": [
       {"id": "center", "name": "Центр", "x": 200, "y": 150, "w": 100, "h": 80, "color": "#8a7a3a", "icon": "✕"},
       {"id": "signpost", "name": "Табличка", "x": 200, "y": 60, "w": 60, "h": 50, "color": "#6a5a2a", "icon": "🪧"},

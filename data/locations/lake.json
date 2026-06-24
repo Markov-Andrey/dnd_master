@@ -10,6 +10,13 @@
   "actions": ["fish", "swim"],
   "visited": false,
   "local_map": {
+    "grid": {
+      "willows": [0, 0],
+      "water": [1, 0],
+      "dock": [2, 1],
+      "shore": [1, 2],
+      "cabin": [0, 2]
+    },
     "subareas": [
       {"id": "shore", "name": "Берег", "x": 200, "y": 200, "w": 140, "h": 80, "color": "#c2b280", "icon": "🏖"},
       {"id": "water", "name": "Озеро", "x": 180, "y": 80, "w": 180, "h": 100, "color": "#2a6a9a", "icon": "🌊"},

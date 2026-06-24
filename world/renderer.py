@@ -92,58 +92,87 @@ def render_global_svg(world: WorldMap, tile: int = 56, pad: int = 20) -> str:
     return svg
 
 
-def render_local_svg(loc: Location, w: int = 480, h: int = 380) -> str:
-    """Локальная карта: детальный вид текущей локации."""
+def render_local_svg(loc: Location, tile: int = 72, pad: int = 16, completed_encounters: set = None, current_subarea: str = None) -> str:
+    """Локальная карта: тайловая сетка подобластей."""
     if not loc or not loc.local_map:
         return ""
 
     lm = loc.local_map
+    grid = lm.get("grid", {})
     subareas = lm.get("subareas", [])
-    paths = lm.get("paths", [])
+    if completed_encounters is None:
+        completed_encounters = set()
 
     sa_map = {sa["id"]: sa for sa in subareas}
+
+    if not grid:
+        return ""
+
+    xs = [p[0] for p in grid.values()]
+    ys = [p[1] for p in grid.values()]
+    min_x, max_x = min(xs), max(xs)
+    min_y, max_y = min(ys), max(ys)
+    cols = max_x - min_x + 1
+    rows = max_y - min_y + 1
+    w = cols * tile + pad * 2
+    h = rows * tile + pad * 2
 
     svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="100%" style="background:#0a0a0a;border-radius:8px;">'
 
     svg += '<defs>'
-    svg += '<filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
-    svg += '<filter id="shadow"><feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.4"/></filter>'
+    svg += '<filter id="shadow"><feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.5"/></filter>'
     svg += '</defs>'
 
-    for a_id, b_id in paths:
-        a = sa_map.get(a_id)
-        b = sa_map.get(b_id)
-        if not a or not b:
-            continue
-        ax = a["x"] + a["w"] // 2
-        ay = a["y"] + a["h"] // 2
-        bx = b["x"] + b["w"] // 2
-        by = b["y"] + b["h"] // 2
-        svg += f'<line x1="{ax}" y1="{ay}" x2="{bx}" y2="{by}" stroke="#3a3a2a" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.4"/>'
+    for cy in range(min_y, max_y + 1):
+        for cx in range(min_x, max_x + 1):
+            px = pad + (cx - min_x) * tile
+            py = pad + (cy - min_y) * tile
 
-    for sa in subareas:
-        x, y, sw, sh = sa["x"], sa["y"], sa["w"], sa["h"]
-        color = sa.get("color", "#555")
-        has_npc = "npc_id" in sa
-        npc_attr = f' data-npc="{sa["npc_id"]}"' if has_npc else ""
+            sa_id = None
+            for sid, pos in grid.items():
+                if pos == [cx, cy]:
+                    sa_id = sid
+                    break
 
-        stroke = "#d4af37" if has_npc else "#2a2a2a"
-        stroke_w = 2 if has_npc else 1
-        opacity = "0.85"
+            if not sa_id:
+                continue
 
-        svg += f'<rect x="{x}" y="{y}" width="{sw}" height="{sh}" fill="{color}" rx="6" stroke="{stroke}" stroke-width="{stroke_w}" opacity="{opacity}" filter="url(#shadow)" data-area="{sa["id"]}" class="local-area{"" if not has_npc else " has-npc"}"{npc_attr}/>'
+            sa = sa_map.get(sa_id)
+            if not sa:
+                continue
 
-        icon = sa.get("icon", "")
-        if icon:
-            ix = x + sw // 2 - 8
-            iy = y + sh // 2 - 12
-            svg += f'<text x="{x + sw // 2}" y="{y + sh // 2 + 4}" text-anchor="middle" font-size="20">{icon}</text>'
+            color = sa.get("color", "#555")
+            has_npc = "npc_id" in sa
+            has_enc = "encounter" in sa
+            enc_done = has_enc and f'{loc.id}:{sa_id}' in completed_encounters
 
-        label_y = y + sh - 6
-        svg += f'<text x="{x + sw // 2}" y="{label_y}" text-anchor="middle" font-size="9" fill="white" font-weight="bold" opacity="0.85" font-family="Segoe UI, sans-serif">{sa["name"]}</text>'
+            is_current = sa_id == current_subarea
+            stroke = "#d4af37" if is_current else ("#d4af37" if has_npc else ("#c0392b" if has_enc and not enc_done else ("#555" if enc_done else "#2a2a2a")))
+            stroke_w = 3 if is_current or has_npc or (has_enc and not enc_done) else 1
+            opacity = 1.0 if not enc_done else 0.4
 
-        if has_npc:
-            svg += f'<rect x="{x - 2}" y="{y - 2}" width="{sw + 4}" height="{sh + 4}" fill="none" stroke="#d4af37" stroke-width="1.5" rx="8" opacity="0.4"><animate attributeName="opacity" values="0.4;0.15;0.4" dur="2s" repeatCount="indefinite"/></rect>'
+            npc_attr = f' data-npc="{sa["npc_id"]}"' if has_npc else ""
+            enc_attr = f' data-encounter="{sa_id}"' if has_enc and not enc_done else ""
+            cls = "local-area"
+            if has_npc: cls += " has-npc"
+            if has_enc and not enc_done: cls += " has-encounter"
+            if is_current: cls += " current"
+
+            if is_current:
+                svg += f'<rect x="{px - 3}" y="{py - 3}" width="{tile + 6}" height="{tile + 6}" fill="none" stroke="#d4af37" stroke-width="3" rx="8" opacity="0.6"><animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/></rect>'
+            elif has_npc:
+                svg += f'<rect x="{px - 3}" y="{py - 3}" width="{tile + 6}" height="{tile + 6}" fill="none" stroke="#d4af37" stroke-width="2" rx="6" opacity="0.4"><animate attributeName="opacity" values="0.4;0.15;0.4" dur="2s" repeatCount="indefinite"/></rect>'
+            elif has_enc and not enc_done:
+                svg += f'<rect x="{px - 3}" y="{py - 3}" width="{tile + 6}" height="{tile + 6}" fill="none" stroke="#c0392b" stroke-width="2" rx="6" opacity="0.4"><animate attributeName="opacity" values="0.4;0.2;0.4" dur="1.5s" repeatCount="indefinite"/></rect>'
+
+            svg += f'<rect x="{px}" y="{py}" width="{tile}" height="{tile}" fill="{color}" rx="6" stroke="{stroke}" stroke-width="{stroke_w}" opacity="{opacity}" filter="url(#shadow)" data-area="{sa_id}" class="{cls}"{enc_attr}{npc_attr}/>'
+
+            icon = sa.get("icon", "")
+            if icon:
+                svg += f'<text x="{px + tile // 2}" y="{py + tile // 2 - 4}" text-anchor="middle" dominant-baseline="central" font-size="{tile // 3}">{icon}</text>'
+
+            name = ("✓ " if enc_done else "") + sa.get("name", "")
+            svg += f'<text x="{px + tile // 2}" y="{py + tile - 6}" text-anchor="middle" font-size="10" fill="{"#888" if enc_done else "white"}" font-weight="bold" opacity="0.9" font-family="Segoe UI, sans-serif">{name}</text>'
 
     svg += '</svg>'
     return svg

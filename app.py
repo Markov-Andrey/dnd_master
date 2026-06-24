@@ -1,7 +1,7 @@
 """Flask-приложение: RPG с диалогами NPC и миром."""
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import os, random, time
+import os, json, random, time
 
 from npc.npc import NPC
 from dialogue.rag_memory import RAGMemory
@@ -33,6 +33,7 @@ world = WorldMap()
 combat: CombatEngine | None = None
 active_trap = None
 active_shop = None
+current_subarea: str | None = None
 quest_manager = QuestManager()
 quest_manager.load_templates()
 game_time = GameTime()
@@ -87,15 +88,22 @@ def static_files(p): return send_from_directory("static", p)
 
 # ─── Мир ──────────────────────────────────────────────────────────────────
 
+def _get_completed_encounters(loc_id: str) -> set:
+    data = _load_encounters()
+    return {k.split(":", 1)[1] for k, v in data.get("completed", {}).items()
+            if k.startswith(loc_id + ":") and v}
+
+
 @app.route("/api/world")
 def get_world():
     loc = world.get_current()
+    completed = _get_completed_encounters(loc.id) if loc else set()
     return jsonify({
         "current_location": loc.to_dict() if loc else None,
         "minimap": render_minimap(world),
         "ascii_map": render_ascii(world),
         "svg_global": render_global_svg(world),
-        "svg_local": render_local_svg(loc) if loc else "",
+        "svg_local": render_local_svg(loc, completed_encounters=completed, current_subarea=current_subarea) if loc else "",
     })
 
 @app.route("/api/world/move", methods=["POST"])
@@ -112,27 +120,20 @@ def move_player():
     
     director_events = director_ai.evaluate()
     
-    encounter_ids = get_encounter(loc.id)
-    random_encounter = None
-    if encounter_ids and random.random() < 0.4:
-        random_encounter = encounter_ids
-    
     for de in director_events:
-        if de.event_type == EventType.RANDOM_ENCOUNTER and not random_encounter:
-            random_encounter = de.data.get("monsters", [])
-        elif de.event_type == EventType.DIFFICULTY_UP:
+        if de.event_type == EventType.DIFFICULTY_UP:
             director_ai.config.difficulty_scale = de.data.get("new_scale", 1.0)
         elif de.event_type == EventType.DIFFICULTY_DOWN:
             director_ai.config.difficulty_scale = de.data.get("new_scale", 1.0)
     
+    completed = _get_completed_encounters(loc.id)
     return jsonify({
         "location": loc.to_dict(),
         "minimap": render_minimap(world),
         "ascii_map": render_ascii(world),
         "svg_global": render_global_svg(world),
-        "svg_local": render_local_svg(loc),
+        "svg_local": render_local_svg(loc, completed_encounters=completed, current_subarea=current_subarea),
         "legend": render_legend(world),
-        "random_encounter": random_encounter,
         "director_events": [{"type": e.event_type.value, "title": e.title,
                               "description": e.description} for e in director_events if e.priority >= 3],
     })
@@ -142,8 +143,20 @@ def get_svg_map():
     mode = request.args.get("mode", "global")
     loc = world.get_current()
     if mode == "local" and loc:
-        return render_local_svg(loc), 200, {"Content-Type": "image/svg+xml"}
+        return render_local_svg(loc, current_subarea=current_subarea), 200, {"Content-Type": "image/svg+xml"}
     return render_global_svg(world), 200, {"Content-Type": "image/svg+xml"}
+
+
+@app.route("/api/world/subarea", methods=["POST"])
+def set_subarea():
+    global current_subarea
+    d = request.get_json(force=True)
+    current_subarea = d.get("subarea_id")
+    loc = world.get_current()
+    completed = _get_completed_encounters(loc.id) if loc else set()
+    return jsonify({
+        "svg_local": render_local_svg(loc, completed_encounters=completed, current_subarea=current_subarea),
+    })
 
 @app.route("/api/world/locations")
 def list_locations():
@@ -176,7 +189,7 @@ def start_dialogue(nid):
     if err: return err
     npc.start_dialogue()
     summary = npc.current_summary if npc.current_summary else ""
-    prompt = director.build_system_prompt(npc, rag.query(nid, "встреча с игроком"), summary)
+    prompt = director.build_system_prompt(npc, rag.query(nid, "встреча с игроком"), summary, all_npcs=npcs)
     greeting = __import__("core.llm_client", fromlist=["chat"]).chat(prompt, [{"role": "user", "content": "(начало диалога)"}])
     npc.add_message("assistant", greeting)
     npc.save()
@@ -202,7 +215,7 @@ def say(nid):
     mems = rag.query(nid, msg)
     summary = npc.current_summary if npc.current_summary else ""
 
-    prompt = director.build_system_prompt(npc, mems, summary)
+    prompt = director.build_system_prompt(npc, mems, summary, all_npcs=npcs)
     reply = None
 
     skill_check = None
@@ -646,6 +659,105 @@ def open_chest():
     return jsonify({"loot": loot})
 
 
+# ─── Энкаунтеры ────────────────────────────────────────────────────────────
+
+ENCOUNTERS_FILE = os.path.join("db", "encounters.json")
+
+
+def _load_encounters():
+    if os.path.exists(ENCOUNTERS_FILE):
+        with open(ENCOUNTERS_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    return {"completed": {}}
+
+
+def _save_encounters(data):
+    os.makedirs(os.path.dirname(ENCOUNTERS_FILE), exist_ok=True)
+    with open(ENCOUNTERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+@app.route("/api/encounter/state")
+def encounter_state():
+    loc = world.get_current()
+    if not loc or not loc.local_map:
+        return jsonify({"completed": {}})
+    data = _load_encounters()
+    loc_id = loc.id
+    completed = {k: v for k, v in data.get("completed", {}).items() if k.startswith(loc_id + ":")}
+    return jsonify({"completed": completed})
+
+
+@app.route("/api/encounter/start", methods=["POST"])
+def encounter_start():
+    global combat, active_trap
+    d = request.get_json(force=True)
+    subarea_id = d.get("subarea_id", "")
+    loc = world.get_current()
+    if not loc or not loc.local_map:
+        return jsonify({"error": "Нет локации"}), 400
+
+    data = _load_encounters()
+    key = f"{loc.id}:{subarea_id}"
+    if data.get("completed", {}).get(key):
+        return jsonify({"error": "Энкаунтер уже пройдён"}), 400
+
+    sa = None
+    for s in loc.local_map.get("subareas", []):
+        if s["id"] == subarea_id and "encounter" in s:
+            sa = s
+            break
+    if not sa:
+        return jsonify({"error": "Нет энкаунтера"}), 400
+
+    enc = sa["encounter"]
+    combat = CombatEngine()
+    player_sb = StatBlock(
+        name=player.name, hp=player.hp, max_hp=player.max_hp,
+        ac=player.get_ac(), level=player.level,
+        strength=player.attributes.get("str", 10),
+        dexterity=player.attributes.get("dex", 10),
+        constitution=player.attributes.get("con", 10),
+        intelligence=player.attributes.get("int", 10),
+        wisdom=player.attributes.get("wis", 10),
+        charisma=player.attributes.get("cha", 10),
+    )
+    weapon = None
+    if hasattr(player, "inventory") and player.inventory.equipment.get("weapon"):
+        weapon = player.inventory.equipment["weapon"]
+    if weapon:
+        dmg = weapon.properties.get("damage", "1d6")
+        player_sb.attacks.append(Attack(name=weapon.name, damage_dice=dmg, damage_type=DamageType.SLASHING))
+    else:
+        player_sb.attacks.append(Attack(name="Кулаки", damage_dice="1", damage_type=DamageType.BLUDGEONING))
+    combat.add_combatant(player_sb, is_player=True, team=0)
+
+    for eid in enc.get("monsters", []):
+        msb = spawn_monster(eid)
+        combat.add_combatant(msb, is_player=False, team=1)
+    combat.start()
+
+    return jsonify({
+        "message": enc["name"],
+        "state": combat.get_state(),
+    })
+
+
+@app.route("/api/encounter/complete", methods=["POST"])
+def encounter_complete():
+    d = request.get_json(force=True)
+    subarea_id = d.get("subarea_id", "")
+    loc = world.get_current()
+    if not loc:
+        return jsonify({"error": "Нет локации"}), 400
+
+    data = _load_encounters()
+    key = f"{loc.id}:{subarea_id}"
+    data.setdefault("completed", {})[key] = True
+    _save_encounters(data)
+    return jsonify({"ok": True})
+
+
 # ─── Золото ────────────────────────────────────────────────────────────────
 
 @app.route("/api/gold")
@@ -880,6 +992,42 @@ def npc_history(nid):
 
 @app.route("/api/npc/<nid>/memory")
 def npc_memory(nid): return jsonify(rag.get_all(nid))
+
+@app.route("/api/npc/<nid>/memory", methods=["POST"])
+def npc_memory_add(nid):
+    d = request.get_json(force=True)
+    text = d.get("text", "")
+    facts = d.get("facts", [])
+    if not text:
+        return jsonify({"error": "text required"}), 400
+    rag.store(nid, text, facts=facts if facts else None, meta={"type": "manual"})
+    return jsonify({"ok": True, "total": len(rag.get_all(nid))})
+
+
+@app.route("/api/npc/<nid>/relations", methods=["GET"])
+def npc_relations_get(nid):
+    npc, err = _npc_or_404(nid)
+    if err: return err
+    resolved = {}
+    for rid, rtype in (npc.relations or {}).items():
+        other = npcs.get(rid)
+        resolved[rid] = {"type": rtype, "name": other.name if other else rid}
+    return jsonify(resolved)
+
+
+@app.route("/api/npc/<nid>/relations", methods=["POST"])
+def npc_relations_set(nid):
+    npc, err = _npc_or_404(nid)
+    if err: return err
+    d = request.get_json(force=True)
+    target_id = d.get("target_id", "")
+    rel_type = d.get("type", "")
+    if not target_id or not rel_type:
+        return jsonify({"error": "target_id and type required"}), 400
+    npc.relations = getattr(npc, "relations", {}) or {}
+    npc.relations[target_id] = rel_type
+    npc.save()
+    return jsonify({"ok": True, "relations": npc.relations})
 
 @app.route("/api/npc/<nid>/summary")
 def npc_summary(nid):

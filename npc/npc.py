@@ -23,6 +23,7 @@ class NPC:
         self.preferences = kw.get("preferences") or {"likes": [], "dislikes": [], "fears": []}
         self.mood = kw.get("mood", "спокоен")
         self.relationships = kw.get("relationships") or {"friendship": 0, "love": 0}
+        self.relations = kw.get("relations") or {}
         self.dialogue_history = kw.get("dialogue_history") or []
         self.current_summary = kw.get("current_summary", "")
         self.is_in_dialogue = kw.get("is_in_dialogue", False)
@@ -45,7 +46,7 @@ class NPC:
             npc_id=npc_id,
             config_name=cfg, **{k: data.get(k) for k in (
                 "name", "name_known", "personality", "background", "preferences",
-                "mood", "relationships", "lore", "quest_hooks", "portrait",
+                "mood", "relationships", "relations", "lore", "quest_hooks", "portrait",
             )}
         )
 
@@ -53,7 +54,7 @@ class NPC:
         from npc.relationship import get_relationship_level, get_love_level
         d = {k: getattr(self, k) for k in (
             "id", "name", "name_known", "personality", "background", "preferences",
-            "mood", "relationships", "emotion_turns", "memories", "msg_count",
+            "mood", "relationships", "relations", "emotion_turns", "memories", "msg_count",
             "dialogue_history", "current_summary", "is_in_dialogue", "lore",
             "quest_hooks", "config_name", "portrait",
         )}
@@ -95,7 +96,7 @@ class NPC:
             data = json.load(f)
         return cls(npc_id=data["id"], **{k: data.get(k) for k in (
             "name", "name_known", "personality", "background", "preferences",
-            "mood", "relationships", "dialogue_history", "current_summary",
+            "mood", "relationships", "relations", "dialogue_history", "current_summary",
             "is_in_dialogue", "lore", "quest_hooks", "config_name",
             "emotion_turns", "memories", "msg_count", "portrait",
         )})

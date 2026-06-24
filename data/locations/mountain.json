@@ -11,6 +11,12 @@
   "actions": ["climb", "scout"],
   "visited": false,
   "local_map": {
+    "grid": {
+      "cave_m": [0, 1],
+      "peak": [1, 0],
+      "cliff": [1, 1],
+      "base": [1, 2]
+    },
     "subareas": [
       {"id": "base", "name": "Подножие", "x": 200, "y": 260, "w": 140, "h": 70, "color": "#8B6914", "icon": "⛰"},
       {"id": "cliff", "name": "Скала", "x": 200, "y": 130, "w": 120, "h": 100, "color": "#6a5a3a", "icon": "🪨"},

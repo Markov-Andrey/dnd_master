@@ -12,11 +12,17 @@
   "actions": ["hunt", "gather"],
   "visited": false,
   "local_map": {
+    "grid": {
+      "old_tree": [0, 0],
+      "clearing": [1, 1],
+      "stream": [2, 0],
+      "den": [1, 2]
+    },
     "subareas": [
       {"id": "clearing", "name": "Поляна", "x": 200, "y": 150, "w": 120, "h": 80, "color": "#2d5a1e", "icon": "🌿"},
       {"id": "old_tree", "name": "Старое дерево", "x": 80, "y": 80, "w": 80, "h": 80, "color": "#1a4d0f", "icon": "🌳"},
       {"id": "stream", "name": "Ручей", "x": 340, "y": 100, "w": 60, "h": 140, "color": "#3a7a3a", "icon": "💧"},
-      {"id": "den", "name": "Логово", "x": 100, "y": 260, "w": 90, "h": 70, "color": "#1a3a0a", "icon": "🐻"}
+      {"id": "den", "name": "Логово волков", "x": 100, "y": 260, "w": 90, "h": 70, "color": "#1a3a0a", "icon": "🐺", "encounter": {"name": "Стая волков", "monsters": ["wolf", "wolf"], "xp": 50}}
     ],
     "paths": [
       ["clearing", "old_tree"], ["clearing", "stream"], ["clearing", "den"]

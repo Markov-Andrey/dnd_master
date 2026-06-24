@@ -10,6 +10,13 @@
   "actions": ["explore", "search"],
   "visited": false,
   "local_map": {
+    "grid": {
+      "gate_r": [0, 1],
+      "altar": [1, 0],
+      "courtyard": [1, 1],
+      "tower": [2, 0],
+      "crypt": [2, 2]
+    },
     "subareas": [
       {"id": "gate_r", "name": "Вход", "x": 40, "y": 160, "w": 80, "h": 70, "color": "#6a4a4a", "icon": "🏛"},
       {"id": "courtyard", "name": "Двор", "x": 180, "y": 140, "w": 120, "h": 90, "color": "#5a4a3a", "icon": "🏚"},

@@ -148,17 +148,18 @@ def _build_love_rules(l):
         case _: return "== ЛЮБОВЬ == Любовь. Поцелуи. Признание. Ты — его мир."
 
 
-def build_system_prompt(npc, memories, summary_block, mem_text=""):
+def build_system_prompt(npc, memories, summary_block, mem_text="", all_npcs=None):
     """Собирает system prompt для NPC из его состояния.
     
-    Контекст: system prompt содержит ВСЮ статику (личность, лор, квесты).
+    Контекст: system prompt содержит ВСЮ статику (личность, лор, квесты, связи).
     History — только последние 2 сообщения (текущий обмен).
+    all_npcs: dict {npc_id: npc_obj} — для резолва имён в relations.
     """
     p = npc.personality if isinstance(npc.personality, dict) else {"core": str(npc.personality)}
     prefs = npc.preferences if isinstance(npc.preferences, dict) else {}
     f, l = npc.relationships["friendship"], npc.relationships["love"]
     rl, ll = get_relationship_level(f), get_love_level(l)
-    traits = ", ".join(p.get("traits", [])) or "нет鲜明ных черт"
+    traits = ", ".join(p.get("traits", [])) or "нет выраженных черт"
     likes = ", ".join(prefs.get("likes", [])) or "ничего"
     dislikes = ", ".join(prefs.get("dislikes", [])) or "ничего"
     fears = ", ".join(prefs.get("fears", [])) or "ничего"
@@ -182,6 +183,19 @@ def build_system_prompt(npc, memories, summary_block, mem_text=""):
         hooks += "\nВыполненные:\n" + "\n".join(f"- {q['text']}" for q in completed_quests[:2])
     emo = build_emotion_text(npc.mood, npc.emotion_turns)
 
+    # Связи NPC-NPC: резолвим id → имя, берём топ-2
+    relations_text = ""
+    rels = getattr(npc, "relations", {}) or {}
+    if rels and all_npcs:
+        resolved = []
+        for rid, rtype in rels.items():
+            other = all_npcs.get(rid)
+            if other:
+                resolved.append(f"{other.name} — {rtype}")
+            else:
+                resolved.append(f"{rid} — {rtype}")
+        relations_text = "Знакомые:\n" + "\n".join(f"- {r}" for r in resolved[:4])
+
     return f"""Ты — NPC в RPG. Живой персонаж в фэнтези-мире.
 
 == СУЩНОСТЬ ==
@@ -201,10 +215,13 @@ def build_system_prompt(npc, memories, summary_block, mem_text=""):
 == ПРЕДЫСТОРИЯ ==
 {npc.background[:600]}
 
-== ОТНОШЕНИЯ ==
+== ОТНОШЕНИЯ С ИГРОКОМ ==
 {rl} (дружба {f:+d}) | {ll} (любовь {l:+d})
 {_RELATION_RULES.get(rl, '')}{first}
 Имя: {"известно — " + npc.name if npc.name_known else "не известно игроку"}
+
+{relations_text}
+
 {mems}
 {lore}
 {hooks}

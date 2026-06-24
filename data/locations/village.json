@@ -13,6 +13,13 @@
   "actions": ["talk", "trade", "rest"],
   "visited": true,
   "local_map": {
+    "grid": {
+      "tavern": [0, 0],
+      "shop": [2, 0],
+      "square": [1, 1],
+      "inn": [0, 2],
+      "well": [2, 2]
+    },
     "subareas": [
       {"id": "square", "name": "Площадь", "x": 200, "y": 150, "w": 120, "h": 80, "color": "#8B4513", "icon": "🏛"},
       {"id": "tavern", "name": "Таверна", "x": 80, "y": 60, "w": 100, "h": 70, "color": "#A0522D", "icon": "🍺"},

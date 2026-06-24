@@ -10,8 +10,15 @@
   "actions": ["gather", "wade"],
   "visited": false,
   "local_map": {
+    "grid": {
+      "fog": [0, 0],
+      "mud": [1, 1],
+      "stump": [2, 0],
+      "mushroom": [0, 2],
+      "hut": [2, 2]
+    },
     "subareas": [
-      {"id": "mud", "name": "Топь", "x": 200, "y": 150, "w": 140, "h": 100, "color": "#3a4a1a", "icon": "🐊"},
+      {"id": "mud", "name": "Топь", "x": 200, "y": 150, "w": 140, "h": 100, "color": "#3a4a1a", "icon": "🐊", "encounter": {"name": "Болотные твари", "monsters": ["rat", "rat", "rat"], "xp": 30}},
       {"id": "fog", "name": "Туман", "x": 100, "y": 60, "w": 120, "h": 80, "color": "#5a6a3a", "icon": "🌫"},
       {"id": "stump", "name": "Пень", "x": 340, "y": 80, "w": 80, "h": 70, "color": "#4a3a1a", "icon": "🪵"},
       {"id": "hut", "name": "Хижина", "x": 340, "y": 240, "w": 90, "h": 60, "color": "#3a2a1a", "icon": "🏚"},

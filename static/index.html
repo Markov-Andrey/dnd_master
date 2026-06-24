@@ -70,14 +70,6 @@
                     </div>
                 </div>
                 <div id="svg-map" class="svg-map"></div>
-                <div class="move-controls">
-                    <button class="btn-move" data-dir="north" disabled>↑</button>
-                    <div class="move-row">
-                        <button class="btn-move" data-dir="west" disabled>←</button>
-                        <button class="btn-move" data-dir="south" disabled>↓</button>
-                        <button class="btn-move" data-dir="east" disabled>→</button>
-                    </div>
-                </div>
             </section>
 
             <!-- Локация: NPC и действия -->
@@ -91,18 +83,22 @@
 
             <!-- Диалог с NPC -->
             <section class="dialogue-panel" id="dialogue-panel" style="display:none">
-                <div class="dialogue-header">
-                    <div id="dialogue-portrait" class="dialogue-portrait-bar"></div>
-                    <span id="dialogue-npc-name"></span>
-                    <div class="dialogue-header-btns">
-                        <button id="btn-end-dialogue" class="btn-end" style="display:none" title="Завершить диалог">💬✓</button>
-                        <button id="btn-close-dialogue" class="btn-close">✕</button>
+                <div class="dialogue-layout">
+                    <div class="dialogue-sidebar" id="dialogue-sidebar"></div>
+                    <div class="dialogue-main">
+                        <div class="dialogue-header">
+                            <span id="dialogue-npc-name"></span>
+                            <div class="dialogue-header-btns">
+                                <button id="btn-end-dialogue" class="btn-end" style="display:none" title="Завершить диалог">💬✓</button>
+                                <button id="btn-close-dialogue" class="btn-close">✕</button>
+                            </div>
+                        </div>
+                        <div id="messages" class="messages"></div>
+                        <div class="input-row">
+                            <input type="text" id="player-input" placeholder="Ваше сообщение..." disabled>
+                            <button id="btn-send" disabled>→</button>
+                        </div>
                     </div>
-                </div>
-                <div id="messages" class="messages"></div>
-                <div class="input-row">
-                    <input type="text" id="player-input" placeholder="Ваше сообщение..." disabled>
-                    <button id="btn-send" disabled>→</button>
                 </div>
             </section>
 

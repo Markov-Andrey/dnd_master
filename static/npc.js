@@ -59,15 +59,9 @@ async function startDialogue(npcId) {
     const nameEl = $("#dialogue-npc-name");
     if (nameEl) nameEl.textContent = npc?.name || npcId;
 
-    if (npc?.portrait) {
-        const portraitBar = $("#dialogue-portrait");
-        if (portraitBar) {
-            portraitBar.innerHTML = `<img src="/static/portraits/${npc.portrait}" class="dialogue-portrait" alt="">`;
-            portraitBar.style.display = "block";
-        }
-    }
-
+    fillDialogueSidebar(npc);
     updateNpcDebugPanel(npc);
+
     setStatus("Начинаю диалог...");
     try {
         const res = await api(`/api/npc/${npcId}/start`, "POST");
@@ -83,11 +77,106 @@ async function startDialogue(npcId) {
     }
 }
 
+function fillDialogueSidebar(npc) {
+    const sb = $("#dialogue-sidebar");
+    if (!sb || !npc) return;
+
+    const f = npc.relationships?.friendship || 0;
+    const l = npc.relationships?.love || 0;
+    const rl = npc.relation_level || "незнакомец";
+    const ll = npc.love_level || "нет";
+    const mood = npc.mood || "спокоен";
+    const traits = npc.personality?.traits?.join(", ") || "";
+    const core = npc.personality?.core || "";
+    const moodColors = { спокоен: "#6a9", рад: "#da4", грустный: "#68a", злой: "#c44", испуганный: "#c84", влюблён: "#e6a" };
+
+    let html = "";
+
+    if (npc.portrait) {
+        html += `<img src="/static/portraits/${npc.portrait}" class="ds-portrait" alt="${npc.name}">`;
+    }
+    html += `<div class="ds-name">${npc.name || npc.id}</div>`;
+    if (traits) html += `<div class="ds-traits">${traits}</div>`;
+    html += `<div class="ds-mood"><span class="ds-mood-dot" style="background:${moodColors[mood] || '#888'}"></span>${mood}</div>`;
+
+    html += `<hr class="ds-divider">`;
+
+    const fPct = ((f + 100) / 2).toFixed(0);
+    const lPct = ((l + 100) / 2).toFixed(0);
+    html += `<div class="ds-section">
+        <div class="ds-label">Отношения</div>
+        <div class="rel-row"><span class="rel-label">Дружба</span><div class="rel-bar"><div class="rel-bar-center"></div><div class="rel-fill ${f>=0?'positive':'negative'}" style="left:${f>=0?'50%':fPct+'%'};right:${f>=0?(100-fPct)+'%':'50%'}"></div></div><span class="rel-val">${f>0?'+':''}${f}</span><span class="rel-level">${rl}</span></div>
+        <div class="rel-row"><span class="rel-label">Любовь</span><div class="rel-bar"><div class="rel-bar-center"></div><div class="rel-fill ${l>=0?'positive':'negative'}" style="left:${l>=0?'50%':lPct+'%'};right:${l>=0?(100-lPct)+'%':'50%'}"></div></div><span class="rel-val">${l>0?'+':''}${l}</span><span class="rel-level">${ll}</span></div>
+    </div>`;
+
+    if (core) {
+        html += `<hr class="ds-divider"><div class="ds-section"><div class="ds-label">Суть</div><div class="ds-text">${core}</div></div>`;
+    }
+
+    if (npc.background) {
+        html += `<div class="ds-section"><div class="ds-label">Предыстория</div><div class="ds-text">${npc.background}</div></div>`;
+    }
+
+    if (npc.lore) {
+        html += `<div class="ds-section"><div class="ds-label">Лор</div><div class="ds-text">${npc.lore}</div></div>`;
+    }
+
+    const prefs = npc.preferences || {};
+    const likes = prefs.likes?.join(", ");
+    const dislikes = prefs.dislikes?.join(", ");
+    const fears = prefs.fears?.join(", ");
+    if (likes || dislikes || fears) {
+        html += `<div class="ds-section"><div class="ds-label">Предпочтения</div><div class="ds-text">`;
+        if (likes) html += `+ ${likes}<br>`;
+        if (dislikes) html += `- ${dislikes}<br>`;
+        if (fears) html += `! ${fears}`;
+        html += `</div></div>`;
+    }
+
+    const rels = npc.relations || {};
+    const relEntries = Object.entries(rels);
+    if (relEntries.length) {
+        html += `<div class="ds-section"><div class="ds-label">Знакомые</div>`;
+        for (const [rid, rtype] of relEntries) {
+            html += `<div class="ds-text">● ${rtype} — ${rid.replace("npc_", "")}</div>`;
+        }
+        html += `</div>`;
+    }
+
+    const quests = npc.quest_hooks || [];
+    if (quests.length) {
+        html += `<div class="ds-section"><div class="ds-label">Квесты</div>`;
+        for (const q of quests) {
+            const text = q.text || q;
+            const done = q.status === "completed";
+            html += `<div class="ds-quest ${done ? 'ds-quest-done' : 'ds-quest-active'}">${done ? '✓ ' : '● '}${text}</div>`;
+        }
+        html += `</div>`;
+    }
+
+    const mems = npc.memories || [];
+    if (mems.length) {
+        html += `<div class="ds-section"><div class="ds-label">Воспоминания (${mems.length})</div>`;
+        for (const m of mems.slice(-5)) {
+            html += `<div class="ds-mem">[${m.category}] ${m.text}</div>`;
+        }
+        html += `</div>`;
+    }
+
+    if (npc.current_summary) {
+        html += `<div class="ds-section"><div class="ds-label">Саммари</div><div class="ds-summary">${npc.current_summary}</div></div>`;
+    }
+
+    html += `<div class="ds-section"><div class="ds-label">Имя</div><div class="ds-text">${npc.name_known ? npc.name + ' (известно)' : 'Неизвестно игроку'}</div></div>`;
+
+    sb.innerHTML = html;
+}
+
 function closeDialogue() {
     const panel = $("#dialogue-panel");
     if (panel) panel.style.display = "none";
-    const portraitBar = $("#dialogue-portrait");
-    if (portraitBar) { portraitBar.innerHTML = ""; portraitBar.style.display = "none"; }
+    const sb = $("#dialogue-sidebar");
+    if (sb) sb.innerHTML = "";
     currentNpcId = null;
     inDialogue = false;
     const msgs = $("#messages");
@@ -121,14 +210,16 @@ async function sendMessage() {
         addMessage(res.npc_response, "npc");
         if (res.skill_check) {
             const sc = res.skill_check;
-            const cls = sc.success ? "success" : "fail";
             addMessage(`[${sc.skill_name} ${sc.total} vs DC ${sc.dc} — ${sc.success ? "УСПЕХ" : "ПРОВАЛ"}]`, "check");
         }
         if (res.item_result) {
             const ir = res.item_result;
             addMessage(`Предмет ${ir.accepted ? "принят" : "отвергнут"}: ${ir.reason}`, "system");
         }
-        updateNpcDebugPanel(res.state);
+        if (res.state) {
+            fillDialogueSidebar(res.state);
+            updateNpcDebugPanel(res.state);
+        }
         setStatus("Диалог активен");
     } catch (e) {
         addMessage(`Ошибка: ${e.message}`, "system");

@@ -9,7 +9,6 @@ async function loadWorld() {
         $("#location-name").textContent = currentLocation?.name || "??";
         $("#location-desc").textContent = currentLocation?.description || "";
         renderSvgMap(data);
-        updateMoveButtons();
         loadLocationNpcs();
         updateLocationButtons();
         loadTime();
@@ -38,12 +37,24 @@ function attachMapListeners() {
             }
         });
     });
-    document.querySelectorAll(".local-area.has-npc").forEach(area => {
-        area.addEventListener("click", () => {
-            const npcId = area.dataset.npc;
-            if (npcId) showNpcFromArea(npcId);
-        });
+    document.querySelectorAll(".local-area").forEach(area => {
         area.style.cursor = "pointer";
+        area.addEventListener("click", async () => {
+            const areaId = area.dataset.area;
+            if (area.classList.contains("has-npc")) {
+                const npcId = area.dataset.npc;
+                if (npcId) showNpcFromArea(npcId);
+            } else if (area.classList.contains("has-encounter")) {
+                const encId = area.dataset.encounter;
+                if (encId) startEncounter(encId);
+            }
+            if (areaId) {
+                const res = await api("/api/world/subarea", "POST", { subarea_id: areaId });
+                const container = $("#svg-map");
+                if (container && res.svg_local) container.innerHTML = res.svg_local;
+                attachMapListeners();
+            }
+        });
     });
 }
 
@@ -72,13 +83,6 @@ async function loadTime() {
     } catch (e) {}
 }
 
-function updateMoveButtons() {
-    const exits = currentLocation?.exits || {};
-    document.querySelectorAll(".btn-move").forEach(btn => {
-        btn.disabled = !exits[btn.dataset.dir];
-    });
-}
-
 function updateLocationButtons() {
     const locId = currentLocation?.id;
     const hasEnc = ["forest", "cave", "ruins", "swamp", "mountain", "crossroads"].includes(locId);
@@ -97,17 +101,11 @@ async function movePlayer(direction) {
         $("#location-name").textContent = currentLocation.name;
         $("#location-desc").textContent = currentLocation.description;
         renderSvgMap(data);
-        updateMoveButtons();
         loadLocationNpcs();
         updateLocationButtons();
         await api("/api/time/advance", "POST", { minutes: 30 });
         loadTime();
-        if (data.random_encounter) {
-            setStatus("Вы столкнулись с врагами!");
-            setTimeout(() => startCombat(), 500);
-        } else {
-            setStatus(`Вы в: ${currentLocation.name}`);
-        }
+        setStatus(`Вы в: ${currentLocation.name}`);
     } catch (e) {
         setStatus("Нельзя идти в этом направлении");
     }
@@ -128,7 +126,3 @@ async function longRest() {
         loadPlayer();
     } catch (e) { setStatus(`Ошибка: ${e.message}`); }
 }
-
-document.querySelectorAll(".btn-move").forEach(btn => {
-    btn.addEventListener("click", () => movePlayer(btn.dataset.dir));
-});
