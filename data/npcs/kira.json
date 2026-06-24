@@ -7,9 +7,8 @@
   "lore": "Кира держит лавку в деревне. Продаёт зелья, травы и припасы. Молва — её главный товар.",
   "relations": {},
   "quest_hooks": [
-    {"text": "Найти потерянный амулет в пещере", "status": "active"},
-    {"text": "Принести редкую траву с болота", "status": "active"},
-    {"text": "Доставить письмо сестре в горы", "status": "active"}
+    {"text": "Найти потерянный амулет в пещере", "status": "active", "chain": "chain_kira", "step": "kira_1"},
+    {"text": "Разгадать тайну амулета", "status": "locked", "chain": "chain_kira", "step": "kira_3"}
   ],
   "preferences": {"likes": ["зелья", "истории"], "dislikes": ["грубость"], "fears": ["темнота"]}
 }

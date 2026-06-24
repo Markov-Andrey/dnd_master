@@ -21,7 +21,7 @@
       {"id": "mud", "name": "Топь", "x": 200, "y": 150, "w": 140, "h": 100, "color": "#3a4a1a", "icon": "🐊", "encounter": {"name": "Болотные твари", "monsters": ["rat", "rat", "rat"], "xp": 30}},
       {"id": "fog", "name": "Туман", "x": 100, "y": 60, "w": 120, "h": 80, "color": "#5a6a3a", "icon": "🌫"},
       {"id": "stump", "name": "Пень", "x": 340, "y": 80, "w": 80, "h": 70, "color": "#4a3a1a", "icon": "🪵"},
-      {"id": "hut", "name": "Хижина", "x": 340, "y": 240, "w": 90, "h": 60, "color": "#3a2a1a", "icon": "🏚"},
+      {"id": "hut", "name": "Хижина", "x": 340, "y": 240, "w": 90, "h": 60, "color": "#3a2a1a", "icon": "🏚", "npc_id": "npc_hermit"},
       {"id": "mushroom", "name": "Грибы", "x": 80, "y": 260, "w": 80, "h": 60, "color": "#6a4a2a", "icon": "🍄"}
     ],
     "paths": [

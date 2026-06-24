@@ -105,6 +105,8 @@ async function movePlayer(direction) {
         updateLocationButtons();
         await api("/api/time/advance", "POST", { minutes: 30 });
         loadTime();
+        if (data.quest_updates?.length) showQuestNotification(data.quest_updates);
+        loadQuests();
         setStatus(`Вы в: ${currentLocation.name}`);
     } catch (e) {
         setStatus("Нельзя идти в этом направлении");

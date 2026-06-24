@@ -127,6 +127,7 @@ def move_player():
             director_ai.config.difficulty_scale = de.data.get("new_scale", 1.0)
     
     completed = _get_completed_encounters(loc.id)
+    quest_updates = quest_manager.update_quest_progress("explore", loc.id)
     return jsonify({
         "location": loc.to_dict(),
         "minimap": render_minimap(world),
@@ -134,6 +135,7 @@ def move_player():
         "svg_global": render_global_svg(world),
         "svg_local": render_local_svg(loc, completed_encounters=completed, current_subarea=current_subarea),
         "legend": render_legend(world),
+        "quest_updates": quest_updates,
         "director_events": [{"type": e.event_type.value, "title": e.title,
                               "description": e.description} for e in director_events if e.priority >= 3],
     })
@@ -259,7 +261,8 @@ def end_dialogue(nid):
     npc.dialogue_history = []
     npc.end_dialogue()
     npc.save()
-    return jsonify({"summary": final, "state": npc.to_dict()})
+    quest_updates = quest_manager.update_quest_progress("talk", nid)
+    return jsonify({"summary": final, "state": npc.to_dict(), "quest_updates": quest_updates})
 
 
 # ─── Бой ───────────────────────────────────────────────────────────────────
@@ -346,6 +349,7 @@ def combat_attack():
     result = combat.attack(current, target, attack_idx)
     
     loot = []
+    quest_updates = []
     if not target.is_alive():
         template_id = target.name.lower().replace(" ", "_")
         loot = monster_roll_loot(template_id)
@@ -361,6 +365,7 @@ def combat_attack():
                     properties=item.get("properties", {}),
                 )
                 player.inventory.add_item(new_item)
+        quest_updates = quest_manager.update_quest_progress("kill", template_id)
     
     combat.next_turn()
     
@@ -372,6 +377,7 @@ def combat_attack():
         "result": result.__dict__,
         "enemy_results": [r.__dict__ for r in enemy_results],
         "loot": loot,
+        "quest_updates": quest_updates,
         "state": combat.get_state(),
     })
 
@@ -755,7 +761,8 @@ def encounter_complete():
     key = f"{loc.id}:{subarea_id}"
     data.setdefault("completed", {})[key] = True
     _save_encounters(data)
-    return jsonify({"ok": True})
+    quest_updates = quest_manager.update_quest_progress("explore", subarea_id)
+    return jsonify({"ok": True, "quest_updates": quest_updates})
 
 
 # ─── Золото ────────────────────────────────────────────────────────────────
@@ -1199,9 +1206,9 @@ def delete_save():
 def _load_npcs():
     saved = NPC.load_all()
     npcs.update(saved)
-    for p in (os.path.join(NPC_DATA_DIR, f) for f in ("kira.json", "unknown_npc.json")):
-        if not os.path.exists(p): continue
-        npc = NPC.from_config(p)
+    for f in os.listdir(NPC_DATA_DIR):
+        if not f.endswith(".json"): continue
+        npc = NPC.from_config(os.path.join(NPC_DATA_DIR, f))
         if npc.id not in npcs:
             npcs[npc.id] = npc
             npc.save()

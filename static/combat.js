@@ -69,6 +69,7 @@ async function combatAttack() {
         const data = await api("/api/combat/attack", "POST", { target: 0, attack: 0 });
         renderCombatState(data.state);
         if (data.loot?.length) showLoot(data.loot);
+        if (data.quest_updates?.length) showQuestNotification(data.quest_updates);
     } catch (e) { setStatus(`Ошибка: ${e.message}`); }
 }
 
@@ -101,4 +102,5 @@ function closeCombat() {
     $("#combat-result")?.classList.add("hidden");
     loadPlayer();
     loadGold();
+    loadQuests();
 }

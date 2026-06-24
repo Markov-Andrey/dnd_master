@@ -57,6 +57,7 @@
                 <button id="btn-save" class="btn-icon" title="Сохранить">💾</button>
                 <button id="btn-load" class="btn-icon" title="Загрузить">📂</button>
                 <button id="btn-inv" class="btn-icon" title="Инвентарь">🎒</button>
+                <button id="btn-quests" class="btn-icon" title="Квесты" onclick="toggleQuests()">📜<span id="quest-badge" class="quest-badge" style="display:none">0</span></button>
             </div>
         </header>
 
@@ -131,6 +132,7 @@
         </main>
 
         <footer class="status-bar" id="status-bar">Готов</footer>
+        <div id="quest-notifications" class="quest-notifications"></div>
     </div>
 
     <!-- Боевая панель -->
@@ -211,6 +213,30 @@
         </div>
     </div>
 
+    <!-- Квесты -->
+    <div id="quest-overlay" class="quest-overlay hidden">
+        <div class="quest-panel">
+            <div class="quest-panel-header">
+                <h2>📜 Квесты</h2>
+                <button id="btn-quest-close" class="btn-close" onclick="toggleQuests()">✕</button>
+            </div>
+            <div class="quest-panel-body">
+                <div class="quest-tab-section">
+                    <div class="quest-section-title">Активные</div>
+                    <div id="quest-active" class="quest-list"></div>
+                </div>
+                <div class="quest-tab-section">
+                    <div class="quest-section-title">Доступные</div>
+                    <div id="quest-available" class="quest-list"></div>
+                </div>
+                <div class="quest-tab-section">
+                    <div class="quest-section-title">Выполненные</div>
+                    <div id="quest-done" class="quest-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Сохранения -->
     <div id="saves-overlay" class="saves-overlay hidden">
         <div class="saves-panel">
@@ -231,6 +257,7 @@
     <script src="/static/player.js"></script>
     <script src="/static/creation.js"></script>
     <script src="/static/saves.js"></script>
+    <script src="/static/quests.js"></script>
     <script src="/static/init.js"></script>
 </body>
 </html>

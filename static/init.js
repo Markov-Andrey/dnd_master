@@ -37,6 +37,9 @@ function bindEvents() {
     $("#btn-load")?.addEventListener("click", openSaves);
     $("#btn-saves-close")?.addEventListener("click", closeSaves);
 
+    // Квесты
+    $("#quest-overlay")?.addEventListener("click", (e) => { if (e.target === e.currentTarget) toggleQuests(); });
+
     // Создание персонажа
     $("#char-name")?.addEventListener("input", updateCharPreview);
     $("#btn-create")?.addEventListener("click", createCharacter);
@@ -49,6 +52,7 @@ async function init() {
         renderAttrEditor();
         updateCharPreview();
     }
+    loadQuests();
 }
 
 init();

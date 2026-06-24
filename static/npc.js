@@ -192,6 +192,8 @@ async function endDialogue() {
     try {
         const res = await api(`/api/npc/${currentNpcId}/end`, "POST");
         addMessage("Диалог завершён. " + (res.summary?.summary || ""), "system");
+        if (res.quest_updates?.length) showQuestNotification(res.quest_updates);
+        loadQuests();
         closeDialogue();
     } catch (e) {
         addMessage(`Ошибка: ${e.message}`, "system");

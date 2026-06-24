@@ -180,6 +180,180 @@ QUEST_TEMPLATES = {
         rewards=QuestReward(xp=400, gold=200, items=["magic_ring"]),
         level_required=5,
     ),
+
+    # === ОСНОВНАЯ СЮЖЕТНАЯ ЛИНИЯ: ПЕЧАТЬ РАЗВАЛЕННЫХ ВРАТ ===
+
+    # Цепочка 1: Кира — амулет
+    "kira_1": Quest(
+        id="kira_1",
+        name="Амулет Керы",
+        description="Кира просит найти амулет, потерянный в пещере. Это семейная реликвия.",
+        giver_npc="npc_kira",
+        location="village",
+        objectives=[QuestObjective(QuestType.TALK, "npc_kira", "Поговорить с Кирой", 0, 1)],
+        rewards=QuestReward(xp=50),
+        level_required=1,
+    ),
+    "kira_2": Quest(
+        id="kira_2",
+        name="Следы в пещере",
+        description="В пещере найди амулет. Рядом — древний журнал с упоминанием Ордена.",
+        giver_npc="npc_kira",
+        location="cave",
+        objectives=[QuestObjective(QuestType.EXPLORE, "amulet", "Найти амулет", 0, 1)],
+        rewards=QuestReward(xp=100, gold=30),
+        level_required=2,
+        prerequisites=["kira_1"],
+    ),
+    "kira_3": Quest(
+        id="kira_3",
+        name="Правда об амулете",
+        description="Амулет — один из пяти осколков ключа. Кира не знала об этом. Её бабушка была Хранительницей.",
+        giver_npc="npc_kira",
+        location="village",
+        objectives=[QuestObjective(QuestType.TALK, "npc_kira", "Вернуть амулет Кире", 0, 1)],
+        rewards=QuestReward(xp=150),
+        level_required=2,
+        prerequisites=["kira_2"],
+    ),
+
+    # Цепочка 2: Грэм — пропавший брат
+    "graham_1": Quest(
+        id="graham_1",
+        name="Брат пропал",
+        description="Грэм просит найти брата Лукуна, который ушёл в горы три месяца назад.",
+        giver_npc="npc_blacksmith",
+        location="village",
+        objectives=[QuestObjective(QuestType.TALK, "npc_blacksmith", "Поговорить с Грэмом", 0, 1)],
+        rewards=QuestReward(xp=50),
+        level_required=1,
+    ),
+    "graham_2": Quest(
+        id="graham_2",
+        name="Лагерь в горах",
+        description="На горе найди лагерь Лукуна. Там его записи о печати и осколках.",
+        giver_npc="npc_blacksmith",
+        location="mountain",
+        objectives=[QuestObjective(QuestType.EXPLORE, "camp", "Найти лагерь Лукуна", 0, 1)],
+        rewards=QuestReward(xp=150, gold=50),
+        level_required=3,
+        prerequisites=["graham_1"],
+    ),
+    "graham_3": Quest(
+        id="graham_3",
+        name="Судьба Лукуна",
+        description="Лукун дошёл до руин и погиб, пытаясь запечатать врата. Он знал правду.",
+        giver_npc="npc_blacksmith",
+        location="ruins",
+        objectives=[QuestObjective(QuestType.EXPLORE, "lucan", "Найти тело Лукуна", 0, 1)],
+        rewards=QuestReward(xp=200, gold=100),
+        level_required=4,
+        prerequisites=["graham_2"],
+    ),
+
+    # Цепочка 3: Древень — знания отшельника
+    "hermit_1": Quest(
+        id="hermit_1",
+        name="Трава для зелья",
+        description="Древень просит принести редкую траву с болота для зелья, укрепляющего память.",
+        giver_npc="npc_hermit",
+        location="swamp",
+        objectives=[QuestObjective(QuestType.COLLECT, "herb", "Собрать траву", 0, 3)],
+        rewards=QuestReward(xp=75, gold=20),
+        level_required=1,
+    ),
+    "hermit_2": Quest(
+        id="hermit_2",
+        name="Правда Ордена",
+        description="После получения зелья Древень рассказывает об Ордене Запертых Врат и пяти осколках.",
+        giver_npc="npc_hermit",
+        location="swamp",
+        objectives=[QuestObjective(QuestType.TALK, "npc_hermit", "Узнать правду", 0, 1)],
+        rewards=QuestReward(xp=150),
+        level_required=2,
+        prerequisites=["hermit_1"],
+    ),
+    "hermit_3": Quest(
+        id="hermit_3",
+        name="Второй осколок",
+        description="Древень отдаёт второй осколок. Он хранит его всю жизнь. Печать слабеет — нужно действовать.",
+        giver_npc="npc_hermit",
+        location="swamp",
+        objectives=[QuestObjective(QuestType.TALK, "npc_hermit", "Получить осколок", 0, 1)],
+        rewards=QuestReward(xp=200),
+        level_required=3,
+        prerequisites=["hermit_2"],
+    ),
+
+    # Цепочка 4: Тенес — тенета странника
+    "wanderer_1": Quest(
+        id="wanderer_1",
+        name="Помощь странника",
+        description="Тенес предлагает помочь найти руины. Он знает дорогу и обещает поддержку.",
+        giver_npc="npc_wanderer",
+        location="crossroads",
+        objectives=[QuestObjective(QuestType.TALK, "npc_wanderer", "Поговорить с Тенесом", 0, 1)],
+        rewards=QuestReward(xp=50),
+        level_required=1,
+    ),
+    "wanderer_2": Quest(
+        id="wanderer_2",
+        name="Подозрительный союзник",
+        description="Тенес знает слишком много. Его семья веками ждала момента вскрыть печать.",
+        giver_npc="npc_wanderer",
+        location="forest",
+        objectives=[QuestObjective(QuestType.EXPLORE, "clues", "Найти улики", 0, 1)],
+        rewards=QuestReward(xp=100),
+        level_required=2,
+        prerequisites=["wanderer_1"],
+    ),
+    "wanderer_3": Quest(
+        id="wanderer_3",
+        name="Истинные намерения",
+        description="Тенес — потомок врагов Ордена. Он хочет вскрыть печать и выпустить зло.",
+        giver_npc="npc_wanderer",
+        location="crossroads",
+        objectives=[QuestObjective(QuestType.TALK, "npc_wanderer", "Конфронтация с Тенесом", 0, 1)],
+        rewards=QuestReward(xp=200),
+        level_required=3,
+        prerequisites=["wanderer_2"],
+    ),
+
+    # Цепочка 5: Стражник
+    "guard_1": Quest(
+        id="guard_1",
+        name="Незнакомец на перевале",
+        description="Стражник не пускает к руинам. Нужно доказать, что ты не враг.",
+        giver_npc="npc_guard",
+        location="mountain",
+        objectives=[QuestObjective(QuestType.TALK, "npc_guard", "Поговорить со стражником", 0, 1)],
+        rewards=QuestReward(xp=50),
+        level_required=3,
+    ),
+    "guard_2": Quest(
+        id="guard_2",
+        name="Доказательства",
+        description="Покажи стражнику осколок ключа или записи Лукуна. Он поверит.",
+        giver_npc="npc_guard",
+        location="mountain",
+        objectives=[QuestObjective(QuestType.EXPLORE, "proof", "Предъявить доказательства", 0, 1)],
+        rewards=QuestReward(xp=150),
+        level_required=4,
+        prerequisites=["guard_1"],
+    ),
+
+    # ФИНАЛ
+    "finale": Quest(
+        id="finale",
+        name="Печать Разваленных Врат",
+        description="Ты собрал осколки и правду. Теперь решай судьбу мира.",
+        giver_npc="",
+        location="ruins",
+        objectives=[QuestObjective(QuestType.EXPLORE, "finale", "Войти в руины", 0, 1)],
+        rewards=QuestReward(xp=1000, gold=500),
+        level_required=5,
+        prerequisites=["kira_3", "graham_3", "hermit_3", "wanderer_3", "guard_2"],
+    ),
 }
 
 
@@ -216,6 +390,9 @@ class QuestManager:
             return False, "Квест не найден."
         if q.status != QuestStatus.AVAILABLE:
             return False, "Квест уже взят или завершён."
+        prereqs_met = all(p in self.completed_quests for p in q.prerequisites)
+        if not prereqs_met:
+            return False, "Не выполнены предпосылки."
         
         q.status = QuestStatus.ACTIVE
         self.active_quests.append(quest_id)
