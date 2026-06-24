@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG World</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: { 400: '#d4af37', 600: '#8b7020' },
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Экран создания персонажа -->
+    <div id="creation-overlay" class="creation-overlay">
+        <div class="creation-panel">
+            <h2>Создание персонажа</h2>
+            <div class="creation-step" id="step-name">
+                <label>Имя персонажа:</label>
+                <input type="text" id="char-name" placeholder="Введите имя..." value="Герой">
+            </div>
+            <div class="creation-step" id="step-attrs">
+                <label>Характеристики (27 очков):</label>
+                <div class="attr-points">Осталось: <span id="attr-points">27</span></div>
+                <div class="attr-editor" id="attr-editor"></div>
+            </div>
+            <div class="creation-step" id="step-preview">
+                <label>Предпросмотр:</label>
+                <div id="char-preview" class="char-preview"></div>
+            </div>
+            <button id="btn-create" class="btn-create">Начать игру</button>
+        </div>
+    </div>
+
+    <!-- Основной интерфейс -->
+    <div class="app" id="main-app" style="display:none">
+        <header class="top-bar">
+            <div class="world-info">
+                <span id="location-name" class="location-name">--</span>
+                <span id="location-desc" class="location-desc"></span>
+            </div>
+            <div class="time-info">
+                <span id="time-display" class="time-display">Утро, 8:00</span>
+                <span id="weather-display" class="weather-display">Ясно</span>
+                <span id="day-display" class="day-display">День 1</span>
+            </div>
+            <div class="controls">
+                <button id="btn-save" class="btn-icon" title="Сохранить">💾</button>
+                <button id="btn-load" class="btn-icon" title="Загрузить">📂</button>
+                <button id="btn-inv" class="btn-icon" title="Инвентарь">🎒</button>
+            </div>
+        </header>
+
+        <main class="layout">
+            <!-- Карта мира -->
+            <section class="map-panel">
+                <div class="map-header">
+                    <div class="map-tabs">
+                        <button class="map-tab active" data-mode="global" onclick="switchMapMode('global')">Глобальная</button>
+                        <button class="map-tab" data-mode="local" onclick="switchMapMode('local')">Локальная</button>
+                    </div>
+                </div>
+                <div id="svg-map" class="svg-map"></div>
+                <div class="move-controls">
+                    <button class="btn-move" data-dir="north" disabled>↑</button>
+                    <div class="move-row">
+                        <button class="btn-move" data-dir="west" disabled>←</button>
+                        <button class="btn-move" data-dir="south" disabled>↓</button>
+                        <button class="btn-move" data-dir="east" disabled>→</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Локация: NPC и действия -->
+            <section class="location-panel">
+                <div class="location-header">
+                    <h3 id="loc-title">Локация</h3>
+                </div>
+                <div id="location-npcs" class="location-npcs"></div>
+                <div id="location-actions" class="location-actions"></div>
+            </section>
+
+            <!-- Диалог с NPC -->
+            <section class="dialogue-panel" id="dialogue-panel" style="display:none">
+                <div class="dialogue-header">
+                    <div id="dialogue-portrait" class="dialogue-portrait-bar"></div>
+                    <span id="dialogue-npc-name"></span>
+                    <div class="dialogue-header-btns">
+                        <button id="btn-end-dialogue" class="btn-end" style="display:none" title="Завершить диалог">💬✓</button>
+                        <button id="btn-close-dialogue" class="btn-close">✕</button>
+                    </div>
+                </div>
+                <div id="messages" class="messages"></div>
+                <div class="input-row">
+                    <input type="text" id="player-input" placeholder="Ваше сообщение..." disabled>
+                    <button id="btn-send" disabled>→</button>
+                </div>
+            </section>
+
+            <!-- Панель состояния -->
+            <aside class="debug-panel">
+                <div class="debug-section">
+                    <h3>Игрок</h3>
+                    <div id="player-info"></div>
+                    <div id="gold-display" class="gold-display">💰 0</div>
+                </div>
+                <div class="debug-section">
+                    <h3>Характеристики</h3>
+                    <div id="player-attrs" class="attrs-grid"></div>
+                </div>
+                <div class="debug-section">
+                    <h3>NPC рядом</h3>
+                    <div id="nearby-npcs" class="scroll-box"></div>
+                </div>
+                <div class="debug-section">
+                    <h3>Действия</h3>
+                    <div class="action-buttons">
+                        <button id="btn-combat" class="action-btn" style="display:none">⚔ Бой</button>
+                        <button id="btn-rest-short" class="action-btn">🛏 Короткий отдых</button>
+                        <button id="btn-rest-long" class="action-btn">⛺ Длинный отдых</button>
+                        <button id="btn-shop" class="action-btn" style="display:none">🏪 Магазин</button>
+                        <button id="btn-chest" class="action-btn" style="display:none">📦 Сундук</button>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <footer class="status-bar" id="status-bar">Готов</footer>
+    </div>
+
+    <!-- Боевая панель -->
+    <div id="combat-overlay" class="combat-overlay hidden">
+        <div class="combat-panel">
+            <div class="combat-header">
+                <h2>Бой</h2>
+                <span id="combat-round" class="combat-round">Раунд 1</span>
+                <button id="btn-combat-close" class="btn-close">✕</button>
+            </div>
+            <div class="combat-body">
+                <div class="combat-combatants" id="combat-combatants"></div>
+                <div class="combat-log" id="combat-log"></div>
+                <div class="combat-actions" id="combat-actions">
+                    <button class="combat-btn attack" id="btn-attack">⚔ Атака</button>
+                    <button class="combat-btn defend" id="btn-defend">🛡 Защита</button>
+                    <button class="combat-btn potion" id="btn-potion">🧪 Зелье</button>
+                    <button class="combat-btn flee" id="btn-flee">🏃 Побег</button>
+                </div>
+            </div>
+            <div id="combat-result" class="combat-result hidden"></div>
+        </div>
+    </div>
+
+    <!-- Магазин -->
+    <div id="shop-overlay" class="shop-overlay hidden">
+        <div class="shop-panel">
+            <div class="shop-header">
+                <h2 id="shop-title">Магазин</h2>
+                <span id="shop-gold" class="shop-gold">💰 0</span>
+                <button id="btn-shop-close" class="btn-close">✕</button>
+            </div>
+            <div class="shop-body">
+                <div class="shop-items" id="shop-items"></div>
+                <div class="shop-my-items">
+                    <h3>Ваш инвентарь</h3>
+                    <div id="shop-inventory" class="shop-inventory"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Лут -->
+    <div id="loot-overlay" class="loot-overlay hidden">
+        <div class="loot-panel">
+            <div class="loot-header">
+                <h2>Добыча</h2>
+                <button id="btn-loot-close" class="btn-close">✕</button>
+            </div>
+            <div class="loot-body" id="loot-body"></div>
+        </div>
+    </div>
+        <div class="inv-panel">
+            <div class="inv-header">
+                <h2>Инвентарь</h2>
+                <span id="inv-weight" class="inv-weight"></span>
+                <button id="inv-close" class="inv-close">✕</button>
+            </div>
+            <div class="inv-body">
+                <div class="inv-character">
+                    <div class="inv-silhouette">
+                        <div class="inv-slot" data-slot="head"><span class="slot-label">Голова</span><span class="slot-icon"></span></div>
+                        <div class="inv-slot" data-slot="neck"><span class="slot-label">Шея</span><span class="slot-icon"></span></div>
+                        <div class="inv-slot" data-slot="chest"><span class="slot-label">Грудь</span><span class="slot-icon"></span></div>
+                        <div class="inv-slot" data-slot="hands"><span class="slot-label">Руки</span><span class="slot-icon"></span></div>
+                        <div class="inv-slot" data-slot="weapon"><span class="slot-label">Оружие</span><span class="slot-icon"></span></div>
+                        <div class="inv-slot" data-slot="shield"><span class="slot-label">Щит</span><span class="slot-icon"></span></div>
+                        <div class="inv-slot" data-slot="ring"><span class="slot-label">Кольцо</span><span class="slot-icon"></span></div>
+                        <div class="inv-slot" data-slot="feet"><span class="slot-label">Ноги</span><span class="slot-icon"></span></div>
+                    </div>
+                </div>
+                <div class="inv-backpack">
+                    <h3>Рюкзак</h3>
+                    <div id="inv-grid" class="inv-grid"></div>
+                </div>
+            </div>
+            <div id="inv-tooltip" class="inv-tooltip hidden"></div>
+        </div>
+    </div>
+
+    <!-- Сохранения -->
+    <div id="saves-overlay" class="saves-overlay hidden">
+        <div class="saves-panel">
+            <div class="saves-header">
+                <h2>Сохранения</h2>
+                <button id="btn-saves-close" class="btn-close">✕</button>
+            </div>
+            <div class="saves-body" id="saves-list"></div>
+        </div>
+    </div>
+
+    <script src="/static/core.js"></script>
+    <script src="/static/world.js"></script>
+    <script src="/static/npc.js"></script>
+    <script src="/static/combat.js"></script>
+    <script src="/static/inventory.js"></script>
+    <script src="/static/shop.js"></script>
+    <script src="/static/player.js"></script>
+    <script src="/static/creation.js"></script>
+    <script src="/static/saves.js"></script>
+    <script src="/static/init.js"></script>
+</body>
+</html>

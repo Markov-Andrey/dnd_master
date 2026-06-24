@@ -1,2 +1,5 @@
-# Python 3.11+ required
-pygame>=2.5.0
+flask==3.1.*
+flask-cors==5.*
+requests==2.*
+chromadb==0.6.*
+sentence-transformers==3.*

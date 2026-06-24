@@ -1,0 +1,67 @@
+{
+  "name": "Герой",
+  "level": 1,
+  "xp": 0,
+  "hp": 10,
+  "max_hp": 10,
+  "gold": 50,
+  "attributes": {
+    "str": 10,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "wis": 10,
+    "cha": 10
+  },
+  "proficiency_bonus": 2,
+  "proficiencies": [],
+  "hit_dice": 1,
+  "hit_dice_max": 1,
+  "exhaustion": 0,
+  "conditions": [],
+  "location_id": "village",
+  "modifiers": {
+    "str": 0,
+    "dex": 0,
+    "con": 0,
+    "int": 0,
+    "wis": 0,
+    "cha": 0
+  },
+  "ac": 10,
+  "xp_to_next": 300,
+  "inventory": {
+    "equipment": {
+      "head": null,
+      "chest": null,
+      "hands": null,
+      "feet": null,
+      "weapon": null,
+      "shield": null,
+      "ring": null,
+      "neck": null
+    },
+    "backpack": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  }
+}

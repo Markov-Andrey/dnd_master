@@ -1,0 +1,323 @@
+{
+  "player": {
+    "name": "Герой",
+    "level": 1,
+    "xp": 0,
+    "hp": 10,
+    "max_hp": 10,
+    "gold": 50,
+    "attributes": {
+      "str": 10,
+      "dex": 10,
+      "con": 10,
+      "int": 10,
+      "wis": 10,
+      "cha": 10
+    },
+    "proficiency_bonus": 2,
+    "proficiencies": [],
+    "hit_dice": 1,
+    "hit_dice_max": 1,
+    "exhaustion": 0,
+    "conditions": [],
+    "location_id": "ruins",
+    "modifiers": {
+      "str": 0,
+      "dex": 0,
+      "con": 0,
+      "int": 0,
+      "wis": 0,
+      "cha": 0
+    },
+    "ac": 10,
+    "xp_to_next": 300,
+    "inventory": {
+      "equipment": {
+        "head": null,
+        "chest": null,
+        "hands": null,
+        "feet": null,
+        "weapon": null,
+        "shield": null,
+        "ring": null,
+        "neck": null
+      },
+      "backpack": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
+  },
+  "location_id": "ruins",
+  "time": {
+    "hour": 8,
+    "minute": 0,
+    "day": 1,
+    "weather": "clear",
+    "weather_duration": 4
+  },
+  "quest_progress": {
+    "available": [
+      {
+        "id": "goblin_hunt",
+        "name": "Охота на гоблинов",
+        "description": "Гоблины беспокоят деревню. Убейте 3 гоблинов в лесу.",
+        "giver_npc": "npc_kira",
+        "location": "forest",
+        "objectives": [
+          {
+            "type": "kill",
+            "target": "goblin",
+            "description": "Убить гоблинов",
+            "current": 0,
+            "required": 3,
+            "is_complete": false
+          }
+        ],
+        "rewards": {
+          "xp": 100,
+          "gold": 50,
+          "items": [
+            "healing_potion"
+          ],
+          "reputation": 0,
+          "unlock_location": ""
+        },
+        "status": "available",
+        "level_required": 1
+      },
+      {
+        "id": "skeleton_cave",
+        "name": "Скелеты в пещере",
+        "description": "В пещере завелись скелеты. Разберитесь с ними.",
+        "giver_npc": "npc_kira",
+        "location": "cave",
+        "objectives": [
+          {
+            "type": "kill",
+            "target": "skeleton",
+            "description": "Убить скелетов",
+            "current": 0,
+            "required": 4,
+            "is_complete": false
+          }
+        ],
+        "rewards": {
+          "xp": 150,
+          "gold": 75,
+          "items": [
+            "dagger"
+          ],
+          "reputation": 0,
+          "unlock_location": ""
+        },
+        "status": "available",
+        "level_required": 2
+      },
+      {
+        "id": "find_herbs",
+        "name": "Поиск трав",
+        "description": "Алхимику нужны редкие травы. Найдите их в лесу.",
+        "giver_npc": "npc_kira",
+        "location": "forest",
+        "objectives": [
+          {
+            "type": "collect",
+            "target": "herb",
+            "description": "Найти травы",
+            "current": 0,
+            "required": 5,
+            "is_complete": false
+          }
+        ],
+        "rewards": {
+          "xp": 75,
+          "gold": 30,
+          "items": [
+            "healing_potion",
+            "healing_potion"
+          ],
+          "reputation": 0,
+          "unlock_location": ""
+        },
+        "status": "available",
+        "level_required": 1
+      },
+      {
+        "id": "explore_ruins",
+        "name": "Исследование руин",
+        "description": "Древние руины хранят секреты. Исследуйте их.",
+        "giver_npc": "npc_kira",
+        "location": "ruins",
+        "objectives": [
+          {
+            "type": "explore",
+            "target": "ruins",
+            "description": "Исследовать руины",
+            "current": 0,
+            "required": 1,
+            "is_complete": false
+          }
+        ],
+        "rewards": {
+          "xp": 200,
+          "gold": 100,
+          "items": [],
+          "reputation": 0,
+          "unlock_location": ""
+        },
+        "status": "available",
+        "level_required": 3
+      },
+      {
+        "id": "bandit_problem",
+        "name": "Проблема с бандитами",
+        "description": "Бандиты орудуют у развилки. Найдите их лагерь.",
+        "giver_npc": "npc_kira",
+        "location": "crossroads",
+        "objectives": [
+          {
+            "type": "kill",
+            "target": "bandit",
+            "description": "Убить бандитов",
+            "current": 0,
+            "required": 3,
+            "is_complete": false
+          },
+          {
+            "type": "explore",
+            "target": "bandit_camp",
+            "description": "Найти лагерь",
+            "current": 0,
+            "required": 1,
+            "is_complete": false
+          }
+        ],
+        "rewards": {
+          "xp": 250,
+          "gold": 150,
+          "items": [
+            "gold_chest"
+          ],
+          "reputation": 0,
+          "unlock_location": ""
+        },
+        "status": "available",
+        "level_required": 4
+      },
+      {
+        "id": "orc_warcamp",
+        "name": "Лагерь орков",
+        "description": "Орки устроили лагерь в горах. Уничтожьте их вожака.",
+        "giver_npc": "npc_kira",
+        "location": "mountain",
+        "objectives": [
+          {
+            "type": "kill",
+            "target": "orc",
+            "description": "Убить орков",
+            "current": 0,
+            "required": 5,
+            "is_complete": false
+          },
+          {
+            "type": "boss",
+            "target": "orc_chief",
+            "description": "Убить вожака",
+            "current": 0,
+            "required": 1,
+            "is_complete": false
+          }
+        ],
+        "rewards": {
+          "xp": 500,
+          "gold": 300,
+          "items": [
+            "great_axe",
+            "gold_chest"
+          ],
+          "reputation": 0,
+          "unlock_location": ""
+        },
+        "status": "available",
+        "level_required": 6
+      },
+      {
+        "id": "wolf_pelts",
+        "name": "Шкуры волков",
+        "description": "Торговец покупает шкуры волков. Принесите 3 шкуры.",
+        "giver_npc": "npc_kira",
+        "location": "forest",
+        "objectives": [
+          {
+            "type": "collect",
+            "target": "wolf_pelt",
+            "description": "Собрать шкуры",
+            "current": 0,
+            "required": 3,
+            "is_complete": false
+          }
+        ],
+        "rewards": {
+          "xp": 60,
+          "gold": 45,
+          "items": [],
+          "reputation": 0,
+          "unlock_location": ""
+        },
+        "status": "available",
+        "level_required": 1
+      },
+      {
+        "id": "mysterious_artifact",
+        "name": "Загадочный артефакт",
+        "description": "В руинах спрятан древний артефакт. Найдите его.",
+        "giver_npc": "npc_kira",
+        "location": "ruins",
+        "objectives": [
+          {
+            "type": "explore",
+            "target": "artifact",
+            "description": "Найти артефакт",
+            "current": 0,
+            "required": 1,
+            "is_complete": false
+          }
+        ],
+        "rewards": {
+          "xp": 400,
+          "gold": 200,
+          "items": [
+            "magic_ring"
+          ],
+          "reputation": 0,
+          "unlock_location": ""
+        },
+        "status": "available",
+        "level_required": 5
+      }
+    ],
+    "active": [],
+    "completed": []
+  },
+  "story": {},
+  "saved_at": "2026-06-23T23:27:53.231996"
+}

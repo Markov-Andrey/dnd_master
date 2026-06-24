@@ -1,0 +1,25 @@
+{
+  "id": "forest",
+  "name": "Тёмный лес",
+  "description": "Густой лес. Деревья так близко, что загораживают солнце. Тихо, только птицы поют.",
+  "tile_color": "#228B22",
+  "npc_ids": [],
+  "exits": {
+    "south": "village",
+    "east": "swamp",
+    "north": "crossroads"
+  },
+  "actions": ["hunt", "gather"],
+  "visited": false,
+  "local_map": {
+    "subareas": [
+      {"id": "clearing", "name": "Поляна", "x": 200, "y": 150, "w": 120, "h": 80, "color": "#2d5a1e", "icon": "🌿"},
+      {"id": "old_tree", "name": "Старое дерево", "x": 80, "y": 80, "w": 80, "h": 80, "color": "#1a4d0f", "icon": "🌳"},
+      {"id": "stream", "name": "Ручей", "x": 340, "y": 100, "w": 60, "h": 140, "color": "#3a7a3a", "icon": "💧"},
+      {"id": "den", "name": "Логово", "x": 100, "y": 260, "w": 90, "h": 70, "color": "#1a3a0a", "icon": "🐻"}
+    ],
+    "paths": [
+      ["clearing", "old_tree"], ["clearing", "stream"], ["clearing", "den"]
+    ]
+  }
+}

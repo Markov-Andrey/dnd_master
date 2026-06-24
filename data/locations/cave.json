@@ -1,0 +1,25 @@
+{
+  "id": "cave",
+  "name": "Пещера",
+  "description": "Тёмная пещера в скале. Из глубины доносится звук капающей воды.",
+  "tile_color": "#696969",
+  "npc_ids": [],
+  "exits": {
+    "west": "village"
+  },
+  "actions": ["explore", "mine"],
+  "visited": false,
+  "local_map": {
+    "subareas": [
+      {"id": "entrance", "name": "Вход", "x": 40, "y": 150, "w": 80, "h": 80, "color": "#808080", "icon": "🕳"},
+      {"id": "tunnel", "name": "Туннель", "x": 170, "y": 140, "w": 100, "h": 50, "color": "#5a5a5a", "icon": "🚇"},
+      {"id": "chamber", "name": "Зал", "x": 310, "y": 120, "w": 130, "h": 100, "color": "#4a4a4a", "icon": "💎"},
+      {"id": "crystal", "name": "Кристаллы", "x": 340, "y": 50, "w": 80, "h": 60, "color": "#7a6aaa", "icon": "✨"},
+      {"id": "pit", "name": "Яма", "x": 340, "y": 260, "w": 80, "h": 60, "color": "#2a2a2a", "icon": "⚠"}
+    ],
+    "paths": [
+      ["entrance", "tunnel"], ["tunnel", "chamber"],
+      ["chamber", "crystal"], ["chamber", "pit"]
+    ]
+  }
+}

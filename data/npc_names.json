@@ -1,9 +1,0 @@
-{
-  "human_male": ["Aldric", "Beren", "Caius", "Doran", "Edric", "Fabian", "Gareth", "Harald", "Ivan", "Joran"],
-  "human_female": ["Alara", "Brynn", "Celia", "Dara", "Elowen", "Faye", "Gwen", "Hilda", "Iris", "Jana"],
-  "elf_male": ["Aerindel", "Caladwen", "Elenmir", "Faladel", "Galathorn", "Isildur", "Larethor", "Miravel"],
-  "elf_female": ["Aelindra", "Celebwen", "Eleniel", "Faladel", "Galawen", "Ithilwen", "Luthien", "Nimrodel"],
-  "orc_male": ["Bolgrak", "Durgash", "Grishnak", "Kragthor", "Mordak", "Orgrak", "Thrakk", "Urgosh"],
-  "orc_female": ["Broga", "Gashna", "Kragda", "Mogra", "Orghna", "Thokka", "Urgsha", "Zogra"],
-  "surnames": ["Blackwood", "Coldwater", "Dustmantle", "Emberveil", "Frostheim", "Goldmoor", "Ironforge", "Nighthollow"]
-}

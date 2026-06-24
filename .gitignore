@@ -1,22 +1,7 @@
-# Python
 __pycache__/
-*.py[cod]
-*.pyo
-.venv/
-venv/
-env/
-
-# Сохранения игры — не коммитим
-saves/
-
-# Claude Code локальные настройки
-.claude/
-
-# Системные
-.DS_Store
-Thumbs.db
-
-# IDE
+*.pyc
 .idea/
-.vscode/
-*.swp
+.pytest_cache/
+db/chroma/
+*.db
+.mimocode/

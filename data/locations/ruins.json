@@ -1,0 +1,25 @@
+{
+  "id": "ruins",
+  "name": "Руины",
+  "description": "Разрушенное древнее строение. Колонны, покрытые мхом. Тайные проходы.",
+  "tile_color": "#8B0000",
+  "npc_ids": [],
+  "exits": {
+    "west": "mountain"
+  },
+  "actions": ["explore", "search"],
+  "visited": false,
+  "local_map": {
+    "subareas": [
+      {"id": "gate_r", "name": "Вход", "x": 40, "y": 160, "w": 80, "h": 70, "color": "#6a4a4a", "icon": "🏛"},
+      {"id": "courtyard", "name": "Двор", "x": 180, "y": 140, "w": 120, "h": 90, "color": "#5a4a3a", "icon": "🏚"},
+      {"id": "tower", "name": "Башня", "x": 340, "y": 60, "w": 80, "h": 80, "color": "#4a3a3a", "icon": "🗼"},
+      {"id": "crypt", "name": "Склеп", "x": 340, "y": 230, "w": 80, "h": 70, "color": "#2a1a1a", "icon": "💀"},
+      {"id": "altar", "name": "Алтарь", "x": 180, "y": 40, "w": 80, "h": 60, "color": "#8a2a2a", "icon": "🕯"}
+    ],
+    "paths": [
+      ["gate_r", "courtyard"], ["courtyard", "tower"], ["courtyard", "crypt"],
+      ["courtyard", "altar"]
+    ]
+  }
+}

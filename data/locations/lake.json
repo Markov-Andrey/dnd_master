@@ -1,0 +1,25 @@
+{
+  "id": "lake",
+  "name": "Озеро",
+  "description": "Чистое озеро, окружённое ивами. Вода прозрачная, видно дно.",
+  "tile_color": "#4682B4",
+  "npc_ids": [],
+  "exits": {
+    "east": "village"
+  },
+  "actions": ["fish", "swim"],
+  "visited": false,
+  "local_map": {
+    "subareas": [
+      {"id": "shore", "name": "Берег", "x": 200, "y": 200, "w": 140, "h": 80, "color": "#c2b280", "icon": "🏖"},
+      {"id": "water", "name": "Озеро", "x": 180, "y": 80, "w": 180, "h": 100, "color": "#2a6a9a", "icon": "🌊"},
+      {"id": "dock", "name": "Пирс", "x": 350, "y": 180, "w": 70, "h": 50, "color": "#8B7355", "icon": "⚓"},
+      {"id": "willows", "name": "Ивы", "x": 60, "y": 60, "w": 80, "h": 80, "color": "#3a7a3a", "icon": "🌿"},
+      {"id": "cabin", "name": "Хижина", "x": 60, "y": 240, "w": 80, "h": 60, "color": "#6B4226", "icon": "🏠"}
+    ],
+    "paths": [
+      ["shore", "water"], ["shore", "dock"], ["shore", "willows"],
+      ["shore", "cabin"]
+    ]
+  }
+}
