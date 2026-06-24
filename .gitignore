@@ -3,5 +3,8 @@ __pycache__/
 .idea/
 .pytest_cache/
 db/chroma/
+db/saves/
+db/players/
+db/npcs/
 *.db
 .mimocode/
